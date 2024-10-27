@@ -74,63 +74,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define INT_TYPE 1
-#define FLOAT_TYPE 2
-#define STRING_TYPE 3
-/*
-typedef struct Instruction {
-    char *op;
-    char *arg1;
-    char *arg2;
-    char *result;
-    struct Instruction *next;
-} Instruction;
-
-Instruction *ir_head = NULL;
-
-void add_instruction(const char *op, const char *arg1, const char *arg2, const char *result) {
-    Instruction *new_instr = (Instruction *)malloc(sizeof(Instruction));
-    new_instr->op = strdup(op);
-    new_instr->arg1 = strdup(arg1);
-    new_instr->arg2 = strdup(arg2);
-    new_instr->result = strdup(result);
-    new_instr->next = ir_head;
-    ir_head = new_instr;
-}
-
-int temp_count = 0;
-
-void generate_intermediate_code() {
-    Instruction *current = ir_head;
-    while (current) {
-	printf("%s %s %s -> %s\n", current->op, current->arg1 ? current->arg1 : "",current->arg2 ? current->arg2 : "", current->result);
-	current = current->next;
-    }
-    
-}
-*/
-
-typedef struct Symbol {
-    char name[30];
-    int type;
-    struct Symbol *next;
-} Symbol;
-
-Symbol *symbol_table = NULL;
-
-
-void add_symbol (const char *name, int type);
-Symbol* lookup_sybol(const char *name);
-void yyerror(const char *s);
-int type_of(const char *name);
-
+typedef struct ASTNode {
+    enum {NODE_NUMBER, NODE_VARIABLE, NODE_BINARY_OP} type;
+    union {
+	double value;
+	char variable[30];
+	struct {
+	    struct ASTNode *left;
+	    struct ASTNode *right;
+	    char operator;
+	} binary_op;
+    } data;
+} ASTNode;
 
 extern FILE *yyin;
 extern int yylex();
 void yyerror(const char *s);
 
 
-#line 134 "parser.tab.c"
+#line 96 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -577,11 +539,11 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_int8 yyrline[] =
 {
-       0,   109,   109,   110,   114,   115,   116,   117,   118,   121,
-     127,   133,   139,   146,   147,   148,   149,   152,   153,   155,
-     156,   157,   159,   160
+       0,    64,    64,    65,    69,    70,    71,    72,    73,    76,
+      79,    82,    83,    90,    91,    92,    93,    96,    97,    98,
+      99,   100,   102,   103
 };
 #endif
 
@@ -1162,89 +1124,107 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* line: exp SEMICOLON NEWLINE  */
-#line 115 "parser.y"
+#line 70 "parser.y"
                                         { printf ("\t%.10g\n", (yyvsp[-2].ival));			}
-#line 1168 "parser.tab.c"
+#line 1130 "parser.tab.c"
     break;
 
   case 6: /* line: out SEMICOLON NEWLINE  */
-#line 116 "parser.y"
+#line 71 "parser.y"
                                         { printf("cout line\n");			}
-#line 1174 "parser.tab.c"
+#line 1136 "parser.tab.c"
     break;
 
   case 7: /* line: asgn SEMICOLON NEWLINE  */
-#line 117 "parser.y"
+#line 72 "parser.y"
                                         { printf("assignment line\n");			}
-#line 1180 "parser.tab.c"
+#line 1142 "parser.tab.c"
     break;
 
   case 8: /* line: error NEWLINE  */
-#line 118 "parser.y"
-                                        { yyerror(" Error detected in input`");	}
-#line 1186 "parser.tab.c"
+#line 73 "parser.y"
+                                        { yyerror(" Error detected in input`");		}
+#line 1148 "parser.tab.c"
     break;
 
   case 9: /* exp: NUMBER  */
-#line 121 "parser.y"
-                                        { //$$ = $1;
-					  //char temp_var[10];
-					  //sprintf(temp_var, "t%d", temp_count++);
-					  //add_instruction("=", $1, NULL, temp_var);
+#line 76 "parser.y"
+                                        {
 					  printf("Number: %d\n", (yyvsp[0].ival));
 					}
-#line 1197 "parser.tab.c"
+#line 1156 "parser.tab.c"
     break;
 
   case 10: /* exp: FLOAT  */
-#line 127 "parser.y"
+#line 79 "parser.y"
                                         { (yyval.ival) = (yyvsp[0].fval);
-					  //char temp_var[10];
-					  //sprintf(temp_var, "t%d", temp.count++);
-					  //add_instruction("=", $1, NULL, temp_var);
 					  printf("Float: %f\n", (yyvsp[0].fval)); 
 					}
-#line 1208 "parser.tab.c"
+#line 1164 "parser.tab.c"
     break;
 
   case 11: /* exp: exp OPERATOR exp  */
-#line 133 "parser.y"
-                                        { //char temp_var[10];
-					  //sprintf(temp_var, "t%d", temp.count++);
-					  //add_instruction($2, $1, $3, temp_var);
-					  //$$ = temp_var;
-					  printf("expression operator expression\n");
-					}
-#line 1219 "parser.tab.c"
+#line 82 "parser.y"
+                                        { printf("expression operator expression\n");	}
+#line 1170 "parser.tab.c"
     break;
 
   case 12: /* exp: LPAREN exp RPAREN  */
-#line 139 "parser.y"
+#line 83 "parser.y"
                                         {printf("expression in a Parenthesis\n");	}
-#line 1225 "parser.tab.c"
+#line 1176 "parser.tab.c"
+    break;
+
+  case 13: /* out: COUT  */
+#line 90 "parser.y"
+                                        {						}
+#line 1182 "parser.tab.c"
     break;
 
   case 14: /* out: out LEFTSHIFT  */
-#line 147 "parser.y"
+#line 91 "parser.y"
                                         {printf("COUT Command\n");}
-#line 1231 "parser.tab.c"
+#line 1188 "parser.tab.c"
+    break;
+
+  case 15: /* out: out VARIABLE  */
+#line 92 "parser.y"
+                                        {						}
+#line 1194 "parser.tab.c"
+    break;
+
+  case 16: /* out: out exp  */
+#line 93 "parser.y"
+                                        {						}
+#line 1200 "parser.tab.c"
     break;
 
   case 18: /* asgn: VARIABLE EQ exp  */
-#line 153 "parser.y"
-                                        {//Symbol *var = lookup_symbol($1); if (!var) {yyerror("Undeclared variable");} else if (var->type != type_of($3)) {yyerror("Type mismatach in assignment");}s
-    }
-#line 1238 "parser.tab.c"
+#line 97 "parser.y"
+                                        {						}
+#line 1206 "parser.tab.c"
+    break;
+
+  case 19: /* asgn: VARIABLE EQ group  */
+#line 98 "parser.y"
+                                        {						}
+#line 1212 "parser.tab.c"
+    break;
+
+  case 20: /* asgn: VARIABLE EQ VARIABLE  */
+#line 99 "parser.y"
+                                        {						}
+#line 1218 "parser.tab.c"
     break;
 
   case 21: /* asgn: VARIABLE EQ STRING  */
-#line 157 "parser.y"
+#line 100 "parser.y"
                                         {printf("STRING");				}
-#line 1244 "parser.tab.c"
+#line 1224 "parser.tab.c"
     break;
 
 
-#line 1248 "parser.tab.c"
+#line 1228 "parser.tab.c"
 
       default: break;
     }
@@ -1437,48 +1417,17 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 163 "parser.y"
+#line 106 "parser.y"
 
 
 void yyerror(const char *s) {
 	fprintf(stderr, "Error: %s\n", s);
 }
-/*
-void add_symbol (const char *name, int type) {
-    Symbol *new_symbol = (Symbol *)malloc(sizeof(Symbol));
-    strcpy(new_symbol->name, name);
-    new_symbol->type = type;
-    new_symbol->next = symbol_table;
-    symbol_table = new_symbol;
-}
 
-Symbol* lookup_symbol(const char *names) {
-    for (Symbol *sy, = symbol_table; sym != NULL; sym = sym->next) {
-	if (strcmp(sym->name , name) == 0) return sym;
-    }
-    return NULL;
-}
-
-int type_of(int value) {
-    Symbol *var = lookup_symbol(value);
-    if (var) {
-	return var->type;
-    }
-
-    if (value >= 0 && value <= 255) {
-	return INT_TYPE;
-    } 
-    else {
-	return FLOAT_TYPE;
-    }
-}
-
-
-*/
 int main(int argc, char **argv) {
 	if (argc == 1) {
 	    yyparse();
-	    //generate_intermediate_code();
+
 	}
 	
 	else if (argc == 2) {	
@@ -1489,7 +1438,7 @@ int main(int argc, char **argv) {
 	    }
 	    yyin = file;
 	    yyparse();
-	    //generate_intermediate_code();
+
 	    fclose(file);
 	    return 0;
 	}

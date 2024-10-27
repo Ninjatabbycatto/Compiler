@@ -4,20 +4,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Symbol {
-    char name[30];
-    int type;
-    struct Symbol *next;
-} Symbol;
-
-Symbol *symbol_table = NULL;
-
-
-void add_symbol (const char *name, int type);
-Symbol* lookup_sybol(const char *name);
-void yyerror(const char *s);
-int type_of(const char *name);
-
+typedef struct ASTNode {
+    enum {NODE_NUMBER, NODE_VARIABLE, NODE_BINARY_OP} type;
+    union {
+	double value;
+	char variable[30];
+	struct {
+	    struct ASTNode *left;
+	    struct ASTNode *right;
+	    char operator;
+	} binary_op;
+    } data;
+} ASTNode;
 
 extern FILE *yyin;
 extern int yylex();
@@ -60,14 +58,7 @@ void yyerror(const char *s);
 %left '*' '/'
 %right RIGHTSHIFT
 %right LEFTSHIFT
-/*
-%type <name> VARIABLE
-%type <number> NUMBER
-%union{
-	char name [20];
-	int number;
-}
-*/
+
 
 %%
 input:
