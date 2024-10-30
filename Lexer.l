@@ -18,6 +18,10 @@ const char *keywords[] = {
 
 };
 
+int lineno = 1;
+void ret_print(char *token_type);
+void yyerror();
+
 %}
 
 DIGIT [0-9]
@@ -31,14 +35,14 @@ FLOAT {DIGIT}+"."{DIGIT}*([eE][+-]?{DIGIT}*)?
 
 "cin"                           { return CIN;                                    }
 "cout"                          { return COUT;                                   }
-{DIGIT}+                        { yylval.ival = atoi(yytext); return (NUMBER);   }
+{DIGIT}+                        { yylval.intval = atoi(yytext); return (NUMBER);   }
 {STRING}                        { size_t len = strlen(yytext) - 2; 
                                     strncpy(yylval.sval, yytext + 1, len);
-                                    yylval.sval[len] = '\0';
+                                    yylval.strval[len] = '\0';
                                     return STRING;}
 
 ";"                             { return SEMICOLON;                              }
-{FLOAT}                         { yylval.fval = atof(yytext);  return FLOAT;     }
+{FLOAT}                         { yylval.double_val = atof(yytext);  return FLOAT;     }
 "+"                             { return OPERATOR;                               }
 "-"                             { return OPERATOR;                               }
 "*"                             { return OPERATOR;                               }
@@ -51,8 +55,10 @@ FLOAT {DIGIT}+"."{DIGIT}*([eE][+-]?{DIGIT}*)?
 "}"                             { return RBRACK;                                 }
 "<<"                            { return LEFTSHIFT; } // Token for output stream operator
 ">>"                            { return RIGHTSHIFT; } // Token for input stream operator
-{ID}+                           { return VARIABLE;                               }
-\n                              { return NEWLINE;                                }
+{ID}+                           { insert (yytext, strlen(yytext, UNDEF, lineno);
+                                  yylval.symtab_item = lookup(yytext);
+                                  return VARIABLE;                               }
+\n                              { lineno += 1; return NEWLINE;                                }
 [ \t]+                          { /*ignore whitespaces*/                         }
 .                               { printf("Unexpected character: %s\n", yytext);  }
 

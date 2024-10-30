@@ -1,26 +1,22 @@
 %{
+
+#include "semantics.c"
+#include "symtab.c"
+#include "ast.h"
+#include "ast.c"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Symbol {
-    char name[30];
-    int type;
-    struct Symbol *next;
-} Symbol;
-
-Symbol *symbol_table = NULL;
-
-
-void add_symbol (const char *name, int type);
-Symbol* lookup_sybol(const char *name);
 void yyerror(const char *s);
 int type_of(const char *name);
 
 
 extern FILE *yyin;
+extern FILE *yyout;
 extern int yylex();
+extern int lineno;
 void yyerror(const char *s);
 
 %}
@@ -28,33 +24,36 @@ void yyerror(const char *s);
 
 
 %union {
-	int ival;
-	double fval;
-	char sval[30] ;
-	char strval[100];
+	char char_val;
+	int int_val;
+	double double_val;
+	char *str_val;
+	list_t* symtab_item;
+	AST_Node* node;
+
 }
 
 
-%token <ival> NUMBER
+%token <int_val> NUMBER
 %token NEWLINE
-%token <sval> VARIABLE
-%token <sval> STRING
-%token <sval> LPAREN
-%token <sval> RPAREN
-%token <sval> LBRACK
-%token <sval> RBRACK
-%token <sval> EQ
-%token <sval> COMMA
-%token <fval> FLOAT
-%token <sval> OPERATOR
-%token <sval> KEYWORD
-%token <sval> CIN
-%token <sval> COUT
-%token <sval> SEMICOLON
-%token <sval> QUOMARK;
+%token <symtab_item> VARIABLE
+%token <int_val> STRING
+%token <int_val> LPAREN
+%token <int_val> RPAREN
+%token <int_val> LBRACK
+%token <int_val> RBRACK
+%token <int_val> EQ
+%token <int_val> COMMA
+%token <double_val> FLOAT
+%token <int_val> OPERATOR
+%token <int_val> KEYWORD
+%token <int_val> CIN
+%token <int_val> COUT
+%token <int_val> SEMICOLON
+%token <int_val> QUOMARK;
 
 
-%type <ival> exp
+%type <int_val> exp
 %right '='
 %left '-' '+'
 %left '*' '/'
@@ -114,6 +113,24 @@ group: exp COMMA
 
 %%
 
+
+AST_Node *new_ast_decl_node(int data_type, list_t **names, int names_count){
+    AST_Node_Decl *v = malloc(sizeof(AST_Node_Decl));
+    v->type = DECL_NODE;
+    v->data_type = data_type;
+    v->names = names;
+    //v->names_count = names_count;
+
+    return (struct AST_Node *) v;
+}
+
+AST_NODE *new_ast_const_node(int const_type, Value val) {
+    AST_Node_Const *v = malloc(sizeof(AST_Node_Const));
+    v->type = CONST_NODE;
+    v->data_type = const_type;
+    v->val = val;
+    return (struct AST_Node *) v;
+}
 void yyerror(const char *s) {
 	fprintf(stderr, "Error: %s\n", s);
 }
