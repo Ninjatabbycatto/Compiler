@@ -11,6 +11,7 @@ typedef enum Node_Type {
 	BOOL_NODE,
 	REL_NODE,
 	CHAR_NODE,
+	STREAM_NODE,
 	EQU_NODE
 }Node_Type;
 
@@ -74,6 +75,7 @@ typedef struct AST_Node{
 	struct AST_Node *right;
 }AST_Node;
 
+
 typedef struct AST_Node_Decl {
 	enum Node_Type type;
 	int data_type;
@@ -114,13 +116,30 @@ typedef struct AST_Node_Arithm{
 	struct AST_Node *right;
 }AST_Node_Arithm;
 
+typedef struct AST_Node_Bool{
+	enum Node_Type type;
+	enum Bool_op op;
+	struct AST_Node *left;
+	struct AST_Node *right;
+}AST_Node_Bool;
+
+
+
 typedef struct AST_Node_Stream {
 	enum Node_Type type;
-	enum Char_op charac;
 	enum Stream_op op;
 	struct AST_Node *left;
 	struct AST_Node *right;
 }AST_Node_Stream;
+
+
+typedef struct AST_Node_Char {
+	enum Node_Type type;
+	enum Char_op op;
+	struct AST_Node *left;
+	struct AST_Node *right;
+
+} AST_Node_Char;
 
 typedef struct AST_Node_Equ {
 	enum Node_Type type;
@@ -134,6 +153,14 @@ typedef struct AST_Node_Equ {
 AST_Node *new_ast_node(Node_Type type, AST_Node *left, AST_Node *right);
 AST_Node *new_ast_decl_node(int data_type, char **names);
 AST_Node *new_ast_const_node(int const_type, Value val);
+AST_Node *new_ast_assign_node(char *entry, AST_Node *assign_val);
+AST_Node *new_ast_incr_node(char *entry, int incr_type, int pf_type);
+AST_Node *new_ast_arithm_node(enum Arithm_op op, AST_Node *left, AST_Node *right);
+AST_Node *new_ast_bool_node(enum Bool_op op, AST_Node *left, AST_Node *right);
+AST_Node *new_ast_rel_node(enum Rel_op op, AST_Node *left, AST_Node *right);
+AST_Node *new_ast_equ_node(enum Equ_op op, AST_Node *left, AST_Node *right);
+AST_Node *new_ast_stream_node(enum Stream_op op, AST_Node *left, AST_Node *right);
+AST_Node *new_ast_char_node(enum Char_op op, AST_Node *left, AST_Node *right);
 
 
 #endif

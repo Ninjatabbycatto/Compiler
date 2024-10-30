@@ -49,7 +49,7 @@ void yyerror(const char *s);
 %token <int_val> QUOMARK;
 
 
-%type <int_val> exp
+%type <double_val> exp
 %right '='
 %left '-' '+'
 %left '*' '/'

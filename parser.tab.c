@@ -537,9 +537,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    68,    68,    69,    73,    74,    75,    76,    77,    80,
-      83,    87,    88,    95,    96,    97,    98,   101,   102,   103,
-     104,   105,   107,   108
+       0,    79,    79,    80,    84,    85,    86,    87,    88,    91,
+      94,    97,    98,   105,   106,   107,   108,   111,   112,   113,
+     114,   115,   117,   118
 };
 #endif
 
@@ -1120,31 +1120,31 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* line: exp SEMICOLON NEWLINE  */
-#line 74 "parser.y"
-                                        { printf ("\t%.10g\n", (yyvsp[-2].int_val));			}
+#line 85 "parser.y"
+                                        { printf ("\t%.10g\n", (yyvsp[-2].double_val));			}
 #line 1126 "parser.tab.c"
     break;
 
   case 6: /* line: out SEMICOLON NEWLINE  */
-#line 75 "parser.y"
+#line 86 "parser.y"
                                         { printf("cout line\n");			}
 #line 1132 "parser.tab.c"
     break;
 
   case 7: /* line: asgn SEMICOLON NEWLINE  */
-#line 76 "parser.y"
+#line 87 "parser.y"
                                         { printf("assignment line\n");			}
 #line 1138 "parser.tab.c"
     break;
 
   case 8: /* line: error NEWLINE  */
-#line 77 "parser.y"
+#line 88 "parser.y"
                                         { yyerror(" Error detected in input`");		}
 #line 1144 "parser.tab.c"
     break;
 
   case 9: /* exp: NUMBER  */
-#line 80 "parser.y"
+#line 91 "parser.y"
                                         {
 					  printf("Number: %d\n", (yyvsp[0].int_val));
 					}
@@ -1152,69 +1152,69 @@ yyreduce:
     break;
 
   case 10: /* exp: FLOAT  */
-#line 83 "parser.y"
-                                        { (yyval.int_val) = (yyvsp[0].double_val);
+#line 94 "parser.y"
+                                        { (yyval.double_val) = (yyvsp[0].double_val);
 					  printf("Float: %f\n", (yyvsp[0].double_val)); 
 					}
 #line 1160 "parser.tab.c"
     break;
 
   case 11: /* exp: exp OPERATOR exp  */
-#line 87 "parser.y"
+#line 97 "parser.y"
                                         { printf("expression operator expression\n");	}
 #line 1166 "parser.tab.c"
     break;
 
   case 12: /* exp: LPAREN exp RPAREN  */
-#line 88 "parser.y"
+#line 98 "parser.y"
                                         { printf("expression in a Parenthesis\n");	}
 #line 1172 "parser.tab.c"
     break;
 
   case 13: /* out: CCOUT  */
-#line 95 "parser.y"
+#line 105 "parser.y"
                                         {						}
 #line 1178 "parser.tab.c"
     break;
 
   case 14: /* out: out LEFTSHIFT  */
-#line 96 "parser.y"
+#line 106 "parser.y"
                                         { printf("COUT Command\n");			}
 #line 1184 "parser.tab.c"
     break;
 
   case 15: /* out: out VARIABLE  */
-#line 97 "parser.y"
+#line 107 "parser.y"
                                         {						}
 #line 1190 "parser.tab.c"
     break;
 
   case 16: /* out: out exp  */
-#line 98 "parser.y"
+#line 108 "parser.y"
                                         {						}
 #line 1196 "parser.tab.c"
     break;
 
   case 18: /* asgn: VARIABLE EQ exp  */
-#line 102 "parser.y"
+#line 112 "parser.y"
                                         {						}
 #line 1202 "parser.tab.c"
     break;
 
   case 19: /* asgn: VARIABLE EQ group  */
-#line 103 "parser.y"
+#line 113 "parser.y"
                                         {						}
 #line 1208 "parser.tab.c"
     break;
 
   case 20: /* asgn: VARIABLE EQ VARIABLE  */
-#line 104 "parser.y"
+#line 114 "parser.y"
                                         {						}
 #line 1214 "parser.tab.c"
     break;
 
   case 21: /* asgn: VARIABLE EQ STRING  */
-#line 105 "parser.y"
+#line 115 "parser.y"
                                         {printf("STRING");				}
 #line 1220 "parser.tab.c"
     break;
@@ -1413,7 +1413,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 111 "parser.y"
+#line 121 "parser.y"
 
 
 void yyerror(const char *s) {
