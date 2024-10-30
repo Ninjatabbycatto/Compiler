@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "ast.h"
 #include "parser.tab.h"
 
 bool is_keyword(const char *str);
@@ -33,12 +34,12 @@ FLOAT {DIGIT}+"."{DIGIT}*([eE][+-]?{DIGIT}*)?
 %%
 
 
-"cin"                           { return CIN;                                    }
-"cout"                          { return COUT;                                   }
-{DIGIT}+                        { yylval.intval = atoi(yytext); return (NUMBER);   }
+"cin"                           { return CCIN;                                    }
+"cout"                          { return CCOUT;                                   }
+{DIGIT}+                        { yylval.int_val = atoi(yytext); return (NUMBER);   }
 {STRING}                        { size_t len = strlen(yytext) - 2; 
-                                    strncpy(yylval.sval, yytext + 1, len);
-                                    yylval.strval[len] = '\0';
+                                    strncpy(yylval.str_val, yytext + 1, len);
+                                    yylval.str_val[len] = '\0';
                                     return STRING;}
 
 ";"                             { return SEMICOLON;                              }
@@ -55,14 +56,17 @@ FLOAT {DIGIT}+"."{DIGIT}*([eE][+-]?{DIGIT}*)?
 "}"                             { return RBRACK;                                 }
 "<<"                            { return LEFTSHIFT; } // Token for output stream operator
 ">>"                            { return RIGHTSHIFT; } // Token for input stream operator
-{ID}+                           { insert (yytext, strlen(yytext, UNDEF, lineno);
-                                  yylval.symtab_item = lookup(yytext);
-                                  return VARIABLE;                               }
+{ID}+                           { return VARIABLE;                               }
 \n                              { lineno += 1; return NEWLINE;                                }
 [ \t]+                          { /*ignore whitespaces*/                         }
 .                               { printf("Unexpected character: %s\n", yytext);  }
 
 %%
+
+int yywrap() {
+    return 1;
+
+}
 
 
 bool is_keyword(const char *str) {

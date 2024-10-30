@@ -1,3 +1,6 @@
+#ifndef AST_H
+#define AST_H
+
 typedef enum Node_Type {
 	BASIC_NODE,
 	DECL_NODE,
@@ -7,6 +10,7 @@ typedef enum Node_Type {
 	ARITHM_NODE,
 	BOOL_NODE,
 	REL_NODE,
+	CHAR_NODE,
 	EQU_NODE
 }Node_Type;
 
@@ -16,6 +20,7 @@ typedef enum Arithm_op{
 	SUB,
 	MUL,
 	DIV,
+
 	INC,
 	DEC
 }Arithm_op;
@@ -27,13 +32,17 @@ typedef enum Bool_op {
 
 }Bool_op;
 
+typedef enum Equ_op {
+	EQUAL,
+	NOT_EQUAL
+}Equ_op;
+
 
 typedef enum Rel_op {
 	GREATER,
 	LESS,
 	GREATER_EQUAL,
 	LESS_EQUAL
-
 }Rel_op;
 
 typedef enum Char_op {
@@ -68,18 +77,18 @@ typedef struct AST_Node{
 typedef struct AST_Node_Decl {
 	enum Node_Type type;
 	int data_type;
-	list_r **names;
+	char **names;
 }AST_Node_Decl;
 
 typedef struct AST_Node_Const{
 	enum Node_Type type;
-	int const_type;
+	int const_type ;
 	Value val;
 }AST_Node_Const;
 
 typedef struct AST_Node_Assign {
 	enum Node_Type type;
-	list_t *entry;
+	char *entry;
 	struct AST_Node *assign_val;
 }AST_Node_Assign;
 
@@ -93,7 +102,7 @@ typedef struct AST_Node_Rel{
 
 typedef struct AST_Node_Incr{
 	enum Node_Type type;
-	list_t *entry;
+	char *entry;
 	int incr_type;
 	int pf_type;
 }AST_Node_Incr;
@@ -106,8 +115,9 @@ typedef struct AST_Node_Arithm{
 }AST_Node_Arithm;
 
 typedef struct AST_Node_Stream {
-	Stream_Node_Type type;
-	Stream_Op op;
+	enum Node_Type type;
+	enum Char_op charac;
+	enum Stream_op op;
 	struct AST_Node *left;
 	struct AST_Node *right;
 }AST_Node_Stream;
@@ -120,5 +130,10 @@ typedef struct AST_Node_Equ {
 }AST_Node_Equ;
 
 
+// AST node management...--------------------------------------------------
+AST_Node *new_ast_node(Node_Type type, AST_Node *left, AST_Node *right);
+AST_Node *new_ast_decl_node(int data_type, char **names);
+AST_Node *new_ast_const_node(int const_type, Value val);
 
 
+#endif

@@ -1,14 +1,12 @@
 %{
 
-#include "semantics.c"
-#include "symtab.c"
-#include "ast.h"
-#include "ast.c"
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "ast.h"
+#include "ast.c"
 void yyerror(const char *s);
 int type_of(const char *name);
 
@@ -21,14 +19,12 @@ void yyerror(const char *s);
 
 %}
 
-
-
 %union {
 	char char_val;
 	int int_val;
 	double double_val;
 	char *str_val;
-	list_t* symtab_item;
+	char* symtab_item;
 	AST_Node* node;
 
 }
@@ -47,8 +43,8 @@ void yyerror(const char *s);
 %token <double_val> FLOAT
 %token <int_val> OPERATOR
 %token <int_val> KEYWORD
-%token <int_val> CIN
-%token <int_val> COUT
+%token <int_val> CCIN
+%token <int_val> CCOUT
 %token <int_val> SEMICOLON
 %token <int_val> QUOMARK;
 
@@ -66,6 +62,17 @@ void yyerror(const char *s);
 	char name [20];
 	int number;
 }
+*/
+
+
+
+/*
+TO DO
+fix grammar
+cout should allow variables
+cin implementation
+AST Management
+
 */
 
 %%
@@ -88,15 +95,15 @@ exp: NUMBER				{
 					  printf("Float: %f\n", $1); 
 					}
     | exp OPERATOR exp			{ printf("expression operator expression\n");	}
-    | LPAREN exp RPAREN			{printf("expression in a Parenthesis\n");	}
+    | LPAREN exp RPAREN			{ printf("expression in a Parenthesis\n");	}
 ;
 
-in:  CIN				
-  | in RIGHTSHIFT			{printf("CIN Command\n");}
+in:  CCIN				
+  | in RIGHTSHIFT			{ printf("CIN Command\n");}
 
 
-out:  COUT				{						}
-   | out LEFTSHIFT			{printf("COUT Command\n");}
+out:  CCOUT				{						}
+   | out LEFTSHIFT			{ printf("COUT Command\n");			}
    | out VARIABLE			{						}
    | out exp				{						}
 ;
@@ -113,24 +120,6 @@ group: exp COMMA
 
 %%
 
-
-AST_Node *new_ast_decl_node(int data_type, list_t **names, int names_count){
-    AST_Node_Decl *v = malloc(sizeof(AST_Node_Decl));
-    v->type = DECL_NODE;
-    v->data_type = data_type;
-    v->names = names;
-    //v->names_count = names_count;
-
-    return (struct AST_Node *) v;
-}
-
-AST_NODE *new_ast_const_node(int const_type, Value val) {
-    AST_Node_Const *v = malloc(sizeof(AST_Node_Const));
-    v->type = CONST_NODE;
-    v->data_type = const_type;
-    v->val = val;
-    return (struct AST_Node *) v;
-}
 void yyerror(const char *s) {
 	fprintf(stderr, "Error: %s\n", s);
 }
