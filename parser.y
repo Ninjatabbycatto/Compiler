@@ -29,94 +29,60 @@ void yyerror(const char *s);
 
 }
 
-
-%token <int_val> NUMBER
-%token NEWLINE
+%token <int_val> CCOUT CCIN 
+%token <int_val> ADDOP MULTOP INCR DIVOP RELOP EQUOP
+%token <int_val> ASSIGN COMMA DOT SEMI RBRACE LBRACE RBRACK LBRACK RPAREN LPAREN LEFTSHIFT RIGHTSHIFT
 %token <symtab_item> VARIABLE
-%token <int_val> STRING
-%token <int_val> LPAREN
-%token <int_val> RPAREN
-%token <int_val> LBRACK
-%token <int_val> RBRACK
-%token <int_val> EQ
-%token <int_val> COMMA
-%token <double_val> FLOAT
-%token <int_val> OPERATOR
-%token <int_val> KEYWORD
-%token <int_val> CCIN
-%token <int_val> CCOUT
-%token <int_val> SEMICOLON
-%token <int_val> QUOMARK;
+%token <int_val> ICONST
+%token <const_val> FCONST
+%token <char_val> CCONST
+%token <str_val> STRING
 
 
-%type <double_val> exp
-%right '='
-%left '-' '+'
-%left '*' '/'
-%right RIGHTSHIFT
-%right LEFTSHIFT
-/*
-%type <name> VARIABLE
-%type <number> NUMBER
-%union{
-	char name [20];
-	int number;
-}
-*/
+%left LBRACK RBRACK LPAREN RPAREN
+%left MULTOP DIVOP
+%left ADDOP
+%left RELOP
+%left EQUOP
+%right ASSIGN
+%left COMMA
 
 
-
-/*
-TO DO
-fix grammar
-cout should allow variables
-cin implementation
-AST Management
-
-*/
+%start program
 
 %%
-input:
-     |input line
+program: statements
 ;
 
-
-line: NEWLINE
-    | exp SEMICOLON NEWLINE		{ printf ("\t%.10g\n", $1);			}
-    | out SEMICOLON NEWLINE		{ printf("cout line\n");			} 
-    | asgn SEMICOLON NEWLINE		{ printf("assignment line\n");			}
-    | error NEWLINE			{ yyerror(" Error detected in input`");		}
+statements: statements statement
+	  | statement
 ;
 
-exp: NUMBER				{
-					  printf("Number: %d\n", $1);
-					}
-    | FLOAT				{ $$ = $1;
-					  printf("Float: %f\n", $1); 
-					}
-    | exp OPERATOR exp			{ printf("expression operator expression\n");	}
-    | LPAREN exp RPAREN			{ printf("expression in a Parenthesis\n");	}
+statement: assignment SEMI		{						}
+	 | cin_statement SEMI		{						}
+	 | cout_statement SEMI		{						}
 ;
 
-in:  CCIN				
-  | in RIGHTSHIFT			{ printf("CIN Command\n");}
-
-
-out:  CCOUT				{						}
-   | out LEFTSHIFT			{ printf("COUT Command\n");			}
-   | out VARIABLE			{						}
-   | out exp				{						}
+assignment: VARIABLE ASSIGN expression  {						}
 ;
 
-asgn: VARIABLE COMMA
-    | VARIABLE EQ exp			{						}
-    | VARIABLE EQ group			{						}
-    | VARIABLE EQ VARIABLE		{						}
-    | VARIABLE EQ STRING		{printf("STRING");				}
+cin_statement: CCIN RIGHTSHIFT VARIABLE {						}
+;
 
-group: exp COMMA
-     | group exp
+cout_statement: CCOUT LEFTSHIFT expression {						}
+	      | CCOUT LEFTSHIFT VARIABLE {						}
+	      | CCOUT LEFTSHIFT STRING	 {						}
+;
 
+expression: expression ADDOP term	{						}
+	  | expression MULTOP term	{						}
+	  | term			{						}
+;
+
+term: VARIABLE				{						}
+    | ICONST				{						}
+    | FCONST				{						}
+;
 
 %%
 
