@@ -1,8 +1,10 @@
 %{
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "ast.h"
 #include "parser.tab.h"
 
 bool is_keyword(const char *str);
@@ -18,55 +20,72 @@ const char *keywords[] = {
 
 };
 
+int lineno = 1;
+void ret_print(char *token_type);
+void yyerror();
+
 %}
 
-DIGIT [0-9]
-ID [a-zA-Z][a-zA-Z0-9]*
-STRING \"([^\\\"]|\\.)*\"
-FLOAT {DIGIT}+"."{DIGIT}*([eE][+-]?{DIGIT}*)?
+word [a-zA-Z]
+digit [0-9]
+wodig {word}|{digit}
+print		[ -~]
 
+ID {word}+{digit}*
+ICONST "0"|[0-9]{digit}*
+FCONST "0"|{digit}*"."{digit}+
+CCONST (\'{print}\')|(\'\\[nftrbv]\')
+STRING \"{print}*\"
 
 %%
-
-
-"cin"                           { return CIN;                                    }
-"cout"                          { return COUT;                                   }
-{DIGIT}+                        { yylval.ival = atoi(yytext); return (NUMBER);   }
-{STRING}                        { size_t len = strlen(yytext) - 2; 
-                                    strncpy(yylval.sval, yytext + 1, len);
-                                    yylval.sval[len] = '\0';
-                                    return STRING;}
-
-";"                             { return SEMICOLON;                              }
-{FLOAT}                         { yylval.fval = atof(yytext);  return FLOAT;     }
-"+"                             { return OPERATOR;                               }
-"-"                             { return OPERATOR;                               }
-"*"                             { return OPERATOR;                               }
-"/"                             { return OPERATOR;                               }
-"="                             { return EQ;                                     }
-","                             { return COMMA;                                  }
-"("                             { return LPAREN;                                 }
-")"                             { return RPAREN;                                 }
-"{"                             { return LBRACK;                                 }
-"}"                             { return RBRACK;                                 }
+"cin"                           { return CCIN;                                    }
+"cout"                          { return CCOUT;                                   }
 "<<"                            { return LEFTSHIFT; } // Token for output stream operator
 ">>"                            { return RIGHTSHIFT; } // Token for input stream operator
-{ID}+                           { return VARIABLE;                               }
-\n                              { return NEWLINE;                                }
-[ \t]+                          { /*ignore whitespaces*/                         }
-.                               { printf("Unexpected character: %s\n", yytext);  }
+
+"+"|"-"                         { return ADDOP;                                   }
+"*"                             { return MULTOP;                                  }
+"/"                             { return DIVOP;                                   }
+"++"|"--"                       { return INCR;                                    }
+"=="|"!="                       { return EQUOP;                                   }
+">"|"<"|">="|"<="               { return RELOP;                                   }
+
+"("			        { return LPAREN; }
+")" 			        { return RPAREN; }
+"]"			        { return RBRACK; }
+"["			        { return LBRACK; }
+"{"			        { return LBRACE; }
+"}"			        { return RBRACE; }
+";"			        { return SEMI; }
+"."			        { return DOT; }
+","			        { return COMMA; }
+"="			        { return ASSIGN; }
+
+
+{ID}                            { return VARIABLE;                               }
+
+{ICONST} 	        	{ yylval.int_val   = atoi(yytext); return ICONST; }
+{FCONST} 		        { yylval.double_val = atof(yytext); return FCONST; }
+{CCONST} 		        { yylval.char_val  = yytext[0];    return CCONST; }
+{STRING} 		        { yylval.str_val = malloc(yyleng * sizeof(char));
+				  strcpy(yylval.str_val, yytext);  return STRING; }
+
+
+"\n"			        { lineno += 1; }
+[ \t\r\f]+		        {           }
+
+.			        { yyerror("Unrecognized character"); }
 
 %%
 
 
-bool is_keyword(const char *str) {
-    for (int i = 0; i < sizeof(keywords) / sizeof(keywords[0]); i++) {
-        if (strcmp(str, keywords[i]) == 0) {
-            return true;
-        }
-    }
-    return false;
+
+int yywrap() {
+    return 1;
+
 }
+
+
 
 
 

@@ -1,116 +1,88 @@
 %{
+
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-typedef struct Symbol {
-    char name[30];
-    int type;
-    struct Symbol *next;
-} Symbol;
-
-Symbol *symbol_table = NULL;
-
-
-void add_symbol (const char *name, int type);
-Symbol* lookup_sybol(const char *name);
+#include "ast.h"
+#include "ast.c"
 void yyerror(const char *s);
 int type_of(const char *name);
 
 
 extern FILE *yyin;
+extern FILE *yyout;
 extern int yylex();
+extern int lineno;
 void yyerror(const char *s);
 
 %}
 
-
-
 %union {
-	int ival;
-	double fval;
-	char sval[30] ;
-	char strval[100];
+	char char_val;
+	int int_val;
+	double double_val;
+	char *str_val;
+	char* symtab_item;
+	AST_Node* node;
+
 }
 
-
-%token <ival> NUMBER
-%token NEWLINE
-%token <sval> VARIABLE
-%token <sval> STRING
-%token <sval> LPAREN
-%token <sval> RPAREN
-%token <sval> LBRACK
-%token <sval> RBRACK
-%token <sval> EQ
-%token <sval> COMMA
-%token <fval> FLOAT
-%token <sval> OPERATOR
-%token <sval> KEYWORD
-%token <sval> CIN
-%token <sval> COUT
-%token <sval> SEMICOLON
-%token <sval> QUOMARK;
+%token <int_val> CCOUT CCIN 
+%token <int_val> ADDOP MULTOP INCR DIVOP RELOP EQUOP
+%token <int_val> ASSIGN COMMA DOT SEMI RBRACE LBRACE RBRACK LBRACK RPAREN LPAREN LEFTSHIFT RIGHTSHIFT
+%token <symtab_item> VARIABLE
+%token <int_val> ICONST
+%token <const_val> FCONST
+%token <char_val> CCONST
+%token <str_val> STRING
 
 
-%type <ival> exp
-%right '='
-%left '-' '+'
-%left '*' '/'
-%right RIGHTSHIFT
-%right LEFTSHIFT
-/*
-%type <name> VARIABLE
-%type <number> NUMBER
-%union{
-	char name [20];
-	int number;
-}
-*/
+%left LBRACK RBRACK LPAREN RPAREN
+%left MULTOP DIVOP
+%left ADDOP
+%left RELOP
+%left EQUOP
+%right ASSIGN
+%left COMMA
+
+
+%start program
 
 %%
-input:
-     |input line
+program: statements
 ;
 
-
-line: NEWLINE
-    | exp SEMICOLON NEWLINE		{ printf ("\t%.10g\n", $1);			}
-    | out SEMICOLON NEWLINE		{ printf("cout line\n");			} 
-    | asgn SEMICOLON NEWLINE		{ printf("assignment line\n");			}
-    | error NEWLINE			{ yyerror(" Error detected in input`");		}
+statements: statements statement
+	  | statement
 ;
 
-exp: NUMBER				{
-					  printf("Number: %d\n", $1);
-					}
-    | FLOAT				{ $$ = $1;
-					  printf("Float: %f\n", $1); 
-					}
-    | exp OPERATOR exp			{ printf("expression operator expression\n");	}
-    | LPAREN exp RPAREN			{printf("expression in a Parenthesis\n");	}
+statement: assignment SEMI		{						}
+	 | cin_statement SEMI		{						}
+	 | cout_statement SEMI		{						}
 ;
 
-in:  CIN				
-  | in RIGHTSHIFT			{printf("CIN Command\n");}
-
-
-out:  COUT				{						}
-   | out LEFTSHIFT			{printf("COUT Command\n");}
-   | out VARIABLE			{						}
-   | out exp				{						}
+assignment: VARIABLE ASSIGN expression  {						}
 ;
 
-asgn: VARIABLE COMMA
-    | VARIABLE EQ exp			{						}
-    | VARIABLE EQ group			{						}
-    | VARIABLE EQ VARIABLE		{						}
-    | VARIABLE EQ STRING		{printf("STRING");				}
+cin_statement: CCIN RIGHTSHIFT VARIABLE {						}
+;
 
-group: exp COMMA
-     | group exp
+cout_statement: CCOUT LEFTSHIFT expression {						}
+	      | CCOUT LEFTSHIFT VARIABLE {						}
+	      | CCOUT LEFTSHIFT STRING	 {						}
+;
 
+expression: expression ADDOP term	{						}
+	  | expression MULTOP term	{						}
+	  | term			{						}
+;
+
+term: VARIABLE				{						}
+    | ICONST				{						}
+    | FCONST				{						}
+;
 
 %%
 

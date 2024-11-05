@@ -54,25 +54,31 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    NUMBER = 258,                  /* NUMBER  */
-    NEWLINE = 259,                 /* NEWLINE  */
-    VARIABLE = 260,                /* VARIABLE  */
-    STRING = 261,                  /* STRING  */
-    LPAREN = 262,                  /* LPAREN  */
-    RPAREN = 263,                  /* RPAREN  */
-    LBRACK = 264,                  /* LBRACK  */
-    RBRACK = 265,                  /* RBRACK  */
-    EQ = 266,                      /* EQ  */
+    CCOUT = 258,                   /* CCOUT  */
+    CCIN = 259,                    /* CCIN  */
+    ADDOP = 260,                   /* ADDOP  */
+    MULTOP = 261,                  /* MULTOP  */
+    INCR = 262,                    /* INCR  */
+    DIVOP = 263,                   /* DIVOP  */
+    RELOP = 264,                   /* RELOP  */
+    EQUOP = 265,                   /* EQUOP  */
+    ASSIGN = 266,                  /* ASSIGN  */
     COMMA = 267,                   /* COMMA  */
-    FLOAT = 268,                   /* FLOAT  */
-    OPERATOR = 269,                /* OPERATOR  */
-    KEYWORD = 270,                 /* KEYWORD  */
-    CIN = 271,                     /* CIN  */
-    COUT = 272,                    /* COUT  */
-    SEMICOLON = 273,               /* SEMICOLON  */
-    QUOMARK = 274,                 /* QUOMARK  */
-    RIGHTSHIFT = 275,              /* RIGHTSHIFT  */
-    LEFTSHIFT = 276                /* LEFTSHIFT  */
+    DOT = 268,                     /* DOT  */
+    SEMI = 269,                    /* SEMI  */
+    RBRACE = 270,                  /* RBRACE  */
+    LBRACE = 271,                  /* LBRACE  */
+    RBRACK = 272,                  /* RBRACK  */
+    LBRACK = 273,                  /* LBRACK  */
+    RPAREN = 274,                  /* RPAREN  */
+    LPAREN = 275,                  /* LPAREN  */
+    LEFTSHIFT = 276,               /* LEFTSHIFT  */
+    RIGHTSHIFT = 277,              /* RIGHTSHIFT  */
+    VARIABLE = 278,                /* VARIABLE  */
+    ICONST = 279,                  /* ICONST  */
+    FCONST = 280,                  /* FCONST  */
+    CCONST = 281,                  /* CCONST  */
+    STRING = 282                   /* STRING  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -81,14 +87,17 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 66 "parser.y"
+#line 22 "parser.y"
 
-	int ival;
-	double fval;
-	char sval[30] ;
-	char strval[100];
+	char char_val;
+	int int_val;
+	double double_val;
+	char *str_val;
+	char* symtab_item;
+	AST_Node* node;
 
-#line 92 "parser.tab.h"
+
+#line 101 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
