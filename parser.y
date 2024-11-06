@@ -1,5 +1,5 @@
 %{
-
+//chekc this out: https://www.reddit.com/r/Compilers/comments/wok89g/resources_to_understand_code_generation_from_ast/?rdt=32827
 
 #include <math.h>
 #include <stdio.h>
@@ -7,6 +7,7 @@
 #include <string.h>
 #include "ast.h"
 #include "ast.c"
+//#include "symbols.c"
 void yyerror(const char *s);
 int type_of(const char *name);
 
@@ -34,7 +35,7 @@ void yyerror(const char *s);
 %token <int_val> ASSIGN COMMA DOT SEMI RBRACE LBRACE RBRACK LBRACK RPAREN LPAREN LEFTSHIFT RIGHTSHIFT
 %token <symtab_item> VARIABLE
 %token <int_val> ICONST
-%token <const_val> FCONST
+%token <double_val> FCONST
 %token <char_val> CCONST
 %token <str_val> STRING
 
@@ -48,22 +49,28 @@ void yyerror(const char *s);
 %left COMMA
 
 
+%type <node> program statements statement assignment cin_statement cout_statement expression term
+
 %start program
 
 %%
-program: statements
+program: 
+       statements			{ main_func_tree = $1;	ast_traversal($1);	}
 ;
 
-statements: statements statement
-	  | statement
+statements: statements statement	{ AST_Node_Statements *temp = (AST_Node_Statements*) $1;
+					  $$ = new_statements_node(temp->statements, temp->statement_count $2);
+					}
+	  | statement			{ $$ = new_statements_node(NULL, 0, $1);	}
 ;
 
-statement: assignment SEMI		{						}
-	 | cin_statement SEMI		{						}
+statement: assignment SEMI		{ $$ = $1;			    		}
+	 | cin_statement SEMI		{ 						}
 	 | cout_statement SEMI		{						}
 ;
 
-assignment: VARIABLE ASSIGN expression  {						}
+assignment: VARIABLE ASSIGN expression  { 				}
+	  | VARIABLE ASSIGN STRING	{						}
 ;
 
 cin_statement: CCIN RIGHTSHIFT VARIABLE {						}
@@ -74,15 +81,16 @@ cout_statement: CCOUT LEFTSHIFT expression {						}
 	      | CCOUT LEFTSHIFT STRING	 {						}
 ;
 
-expression: expression ADDOP term	{						}
-	  | expression MULTOP term	{						}
-	  | term			{						}
+expression: expression ADDOP term	{ $$ = new_ast_arithm_node($2.ival, $1, $3);	}
+	  | expression MULTOP term	{ $$ = new_ast_arithm_node(MUL, $1, $3);	}
+	  | term			{ $$ = $1;					}
 ;
 
-term: VARIABLE				{						}
-    | ICONST				{						}
+term: VARIABLE				{ 			    	}
+    | ICONST				{   						}
     | FCONST				{						}
 ;
+
 
 %%
 

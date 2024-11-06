@@ -32,6 +32,35 @@ AST_Node *new_ast_const_node(int const_type, Value val){
 
 
 
+AST_Node *new_statements_node(AST_Node **statements, int statement_count, AST_Node *statement){
+	// allocate memory
+	AST_Node_Statements *v = malloc (sizeof (AST_Node_Statements));
+	
+	// set node type
+	v->type = STATEMENTS;
+	
+	// first statement
+	if(statements == NULL){
+		statements = (AST_Node**) malloc (sizeof (AST_Node*));
+		statements[0] = statement;
+		statement_count = 1;
+	}
+	// add new statement
+	else{
+		statements = (AST_Node**) realloc (statements, (statement_count + 1) * sizeof (AST_Node*));
+		statements[statement_count] = statement;
+		statement_count++;
+	}
+	
+	// set entries
+	v->statements = statements;
+	v->statement_count = statement_count;
+	
+	// return type-casted result
+	return (struct AST_Node *) v;
+}
+
+
 AST_Node *new_ast_assign_node(char *entry, AST_Node *assign_val) {
 	AST_Node_Assign *v = malloc (sizeof(AST_Node_Assign));
 
@@ -52,6 +81,20 @@ AST_Node *new_ast_incr_node(char *entry, int incr_type, int pf_type) {
 	v->pf_type = pf_type;
 
 	return (struct AST_Node *) v;
+}
+
+
+AST_Node *new_ast_ref_node(char *entry, int ref){
+	// allocate memory
+	AST_Node_Ref *v = malloc (sizeof (AST_Node_Ref));
+	
+	// set entries
+	v->type = REF_NODE;
+	v->entry = entry;
+	v->ref = ref;
+	
+	// return type-casted result
+	return (struct AST_Node *) v;	
 }
 
 

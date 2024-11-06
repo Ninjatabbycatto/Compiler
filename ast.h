@@ -3,11 +3,14 @@
 
 typedef enum Node_Type {
 	BASIC_NODE,
+	DECLARATIONS,
 	DECL_NODE,
 	CONST_NODE,
+	STATEMENTS,
 	ASSIGN_NODE,
 	INCR_NODE,
 	ARITHM_NODE,
+	REF_NODE,
 	BOOL_NODE,
 	REL_NODE,
 	CHAR_NODE,
@@ -88,6 +91,13 @@ typedef struct AST_Node_Const{
 	Value val;
 }AST_Node_Const;
 
+typedef struct AST_Node_Statements {
+	enum Node_Type type;
+	struct AST_Node **statements;
+	int statement_count;
+}AST_Node_Statements;
+
+
 typedef struct AST_Node_Assign {
 	enum Node_Type type;
 	char *entry;
@@ -114,6 +124,7 @@ typedef struct AST_Node_Arithm{
 	enum Arithm_op op;
 	struct AST_Node *left;
 	struct AST_Node *right;
+	int data_type;
 }AST_Node_Arithm;
 
 typedef struct AST_Node_Bool{
@@ -123,6 +134,15 @@ typedef struct AST_Node_Bool{
 	struct AST_Node *right;
 }AST_Node_Bool;
 
+typedef struct AST_Node_Ref{
+	enum Node_Type type; // node type
+	
+	// symbol table entry
+	char *entry;
+	
+	// reference or not
+	int ref; // 0: not reference, 1: reference
+}AST_Node_Ref;
 
 
 typedef struct AST_Node_Stream {
@@ -149,10 +169,15 @@ typedef struct AST_Node_Equ {
 }AST_Node_Equ;
 
 
+static AST_Node* main_func_tree;
+
+
+
 // AST node management...--------------------------------------------------
 AST_Node *new_ast_node(Node_Type type, AST_Node *left, AST_Node *right);
 AST_Node *new_ast_decl_node(int data_type, char **names);
 AST_Node *new_ast_const_node(int const_type, Value val);
+AST_Node *new_statements_node(AST_Node **statements, int statement_count, AST_Node *statement);
 AST_Node *new_ast_assign_node(char *entry, AST_Node *assign_val);
 AST_Node *new_ast_incr_node(char *entry, int incr_type, int pf_type);
 AST_Node *new_ast_arithm_node(enum Arithm_op op, AST_Node *left, AST_Node *right);
@@ -161,6 +186,5 @@ AST_Node *new_ast_rel_node(enum Rel_op op, AST_Node *left, AST_Node *right);
 AST_Node *new_ast_equ_node(enum Equ_op op, AST_Node *left, AST_Node *right);
 AST_Node *new_ast_stream_node(enum Stream_op op, AST_Node *left, AST_Node *right);
 AST_Node *new_ast_char_node(enum Char_op op, AST_Node *left, AST_Node *right);
-
 
 #endif
