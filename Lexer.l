@@ -45,17 +45,7 @@ STRING \"{print}*\"
 
 "<<"                            { return LEFTSHIFT; } // Token for output stream operator
 ">>"                            { return RIGHTSHIFT; } // Token for input stream operator
-"+"					    { yylval.val.ival = ADD; return ADDOP; }
-"-"					    { yylval.val.ival = SUB; return ADDOP; }
-"*"						{ return MULTOP; }
-"/"						{ return DIVOP; }
-"--"				    { yylval.val.ival = DEC; return INCR; }
-"=="				    { yylval.val.ival = EQUAL; return EQUOP; }
-"!="				    { yylval.val.ival = NOT_EQUAL; return EQUOP; }
-">"						{ yylval.val.ival = GREATER; return RELOP; }
-"<"						{ yylval.val.ival = LESS; return RELOP; }
-">="					{ yylval.val.ival = GREATER_EQUAL; return RELOP; }
-"<="					{ yylval.val.ival = LESS_EQUAL; return RELOP; }
+"+"					    { return ADDOP; }
 
 
 "("			        { return LPAREN; }
@@ -73,7 +63,6 @@ STRING \"{print}*\"
 {ID}                            { return VARIABLE;                               }
 
 {ICONST} 	        	{ yylval.int_val   = atoi(yytext); return ICONST; }
-{FCONST} 		        { yylval.double_val = atof(yytext); return FCONST; }
 {CCONST} 		        { yylval.char_val  = yytext[0];    return CCONST; }
 {STRING} 		        { yylval.str_val = malloc(yyleng * sizeof(char));
 				  strcpy(yylval.str_val, yytext);  return STRING; }

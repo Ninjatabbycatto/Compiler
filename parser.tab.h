@@ -76,10 +76,8 @@ extern int yydebug;
     RIGHTSHIFT = 277,              /* RIGHTSHIFT  */
     VARIABLE = 278,                /* VARIABLE  */
     ICONST = 279,                  /* ICONST  */
-    FCONST = 280,                  /* FCONST  */
-    CCONST = 281,                  /* CCONST  */
-    STRING = 282,                  /* STRING  */
-    REFER = 283                    /* REFER  */
+    CCONST = 280,                  /* CCONST  */
+    STRING = 281                   /* STRING  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -88,18 +86,15 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 60 "parser.y"
+#line 29 "parser.y"
 
-	Value val;
+
 	char char_val;
 	int int_val;
-	double double_val;
 	char *str_val;
-	char* symtab_item;
-	AST_Node* node;
 
 
-#line 103 "parser.tab.h"
+#line 98 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

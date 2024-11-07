@@ -5,8 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ast.h"
-#include "ast.c"
+
+#include "parser.tab.h"
+
 //#include "symbols.c"
 void yyerror(const char *s);
 int type_of(const char *name);
@@ -23,71 +24,31 @@ void generateAssembly(const char *code) {
 }
 FILE *fptr;
 
-typedef struct {
-    char *name;        // Name of the variable
-    int int_value;     // Integer value (you can expand this for other types)
-} Symbol;
-
-#define MAX_VARIABLES 100
-
-Symbol symbol_table[MAX_VARIABLES]; // Example symbol table
-int symbol_count = 0;
-
-// Function to add a variable to the symbol table
-void add_variable(const char *name, int value) {
-    if (symbol_count >= MAX_VARIABLES) {
-        fprintf(stderr, "Error: Symbol table full\n");
-        exit(EXIT_FAILURE);
-    }
-    symbol_table[symbol_count].name = strdup(name); // Duplicate string for storage
-    symbol_table[symbol_count].int_value = value;
-    symbol_count++;
-}
-
-// Function to get variable value from the symbol table
-int get_variable_value(const char *name) {
-    for (int i = 0; i < symbol_count; i++) {
-        if (strcmp(symbol_table[i].name, name) == 0) {
-            return symbol_table[i].int_value; // Return the integer value
-        }
-    }
-    fprintf(stderr, "Error: Variable '%s' not found\n", name);
-    exit(EXIT_FAILURE);
-}
-
 %}
 
 %union {
-	Value val;
+
 	char char_val;
 	int int_val;
-	double double_val;
 	char *str_val;
-	char* symtab_item;
-	AST_Node* node;
 
 }
 
-%token <int_val> CCOUT CCIN 
-%token <int_val> ADDOP MULTOP INCR DIVOP RELOP EQUOP
-%token <int_val> ASSIGN COMMA DOT SEMI RBRACE LBRACE RBRACK LBRACK RPAREN LPAREN LEFTSHIFT RIGHTSHIFT
+%token <str_val> CCOUT CCIN 
+%token <str_val> ADDOP MULTOP INCR DIVOP RELOP EQUOP
+%token <str_val> ASSIGN COMMA DOT SEMI RBRACE LBRACE RBRACK LBRACK RPAREN LPAREN LEFTSHIFT RIGHTSHIFT
 %token <str_val> VARIABLE
 %token <int_val> ICONST
-%token <double_val> FCONST
 %token <char_val> CCONST
 %token <str_val> STRING
-%token <val> REFER
 
-%left LBRACK RBRACK LPAREN RPAREN
-%left MULTOP DIVOP
 %left ADDOP
-%left RELOP
-%left EQUOP
 %right ASSIGN
 %left COMMA
 
 %type <int_val> expression
-%type <node> program statements statement assignment cin_statement cout_statement  term
+%type <str_val> term
+%type <str_val> program statements statement assignment cin_statement cout_statement
 
 %start program
 
@@ -102,13 +63,13 @@ statements: statements statement	{						}
 	  | statement			{						}
 ;
 
-statement: assignment SEMI		{						}
+statement: assignment SEMI		{ 				}
 	 | cin_statement SEMI		{ 						}
 	 | cout_statement SEMI		{						}
 ;
 
-assignment: VARIABLE ASSIGN expression  { printf(" %d %d %d ", $1, $2, $3);		}
-	  | VARIABLE ASSIGN STRING	{						}
+assignment: VARIABLE ASSIGN expression  {    }
+	  | VARIABLE ASSIGN STRING	{			}
 ;
 
 cin_statement: CCIN RIGHTSHIFT VARIABLE {						}
@@ -120,14 +81,11 @@ cout_statement: CCOUT LEFTSHIFT expression {						}
 ;
 
 expression: expression ADDOP term	{					    	}
-	  | expression MULTOP term	{						}
 	  | term			{						}
 ;
 
-term: VARIABLE				{   
-					    }
-    | ICONST				{						}
-    | FCONST				{						}
+term: VARIABLE				{ printf("Variable: %s\n", $1);}
+    | ICONST				{	 			}
 ;
 
 
