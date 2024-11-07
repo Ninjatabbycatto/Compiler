@@ -145,15 +145,16 @@ enum yysymbol_kind_t
   YYSYMBOL_FCONST = 25,                    /* FCONST  */
   YYSYMBOL_CCONST = 26,                    /* CCONST  */
   YYSYMBOL_STRING = 27,                    /* STRING  */
-  YYSYMBOL_YYACCEPT = 28,                  /* $accept  */
-  YYSYMBOL_program = 29,                   /* program  */
-  YYSYMBOL_statements = 30,                /* statements  */
-  YYSYMBOL_statement = 31,                 /* statement  */
-  YYSYMBOL_assignment = 32,                /* assignment  */
-  YYSYMBOL_cin_statement = 33,             /* cin_statement  */
-  YYSYMBOL_cout_statement = 34,            /* cout_statement  */
-  YYSYMBOL_expression = 35,                /* expression  */
-  YYSYMBOL_term = 36                       /* term  */
+  YYSYMBOL_REFER = 28,                     /* REFER  */
+  YYSYMBOL_YYACCEPT = 29,                  /* $accept  */
+  YYSYMBOL_program = 30,                   /* program  */
+  YYSYMBOL_statements = 31,                /* statements  */
+  YYSYMBOL_statement = 32,                 /* statement  */
+  YYSYMBOL_assignment = 33,                /* assignment  */
+  YYSYMBOL_cin_statement = 34,             /* cin_statement  */
+  YYSYMBOL_cout_statement = 35,            /* cout_statement  */
+  YYSYMBOL_expression = 36,                /* expression  */
+  YYSYMBOL_term = 37                       /* term  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -484,7 +485,7 @@ union yyalloc
 #define YYLAST   28
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  28
+#define YYNTOKENS  29
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  9
 /* YYNRULES -- Number of rules.  */
@@ -493,7 +494,7 @@ union yyalloc
 #define YYNSTATES  32
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   282
+#define YYMAXUTOK   283
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -535,15 +536,15 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27
+      25,    26,    27,    28
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    58,    58,    61,    64,    67,    68,    69,    72,    73,
-      76,    79,    80,    81,    84,    85,    86,    89,    90,    91
+       0,    59,    59,    65,    68,    71,    72,    73,    76,    77,
+      80,    83,    84,    85,    88,    89,    91,    94,    95,    96
 };
 #endif
 
@@ -563,8 +564,9 @@ static const char *const yytname[] =
   "ADDOP", "MULTOP", "INCR", "DIVOP", "RELOP", "EQUOP", "ASSIGN", "COMMA",
   "DOT", "SEMI", "RBRACE", "LBRACE", "RBRACK", "LBRACK", "RPAREN",
   "LPAREN", "LEFTSHIFT", "RIGHTSHIFT", "VARIABLE", "ICONST", "FCONST",
-  "CCONST", "STRING", "$accept", "program", "statements", "statement",
-  "assignment", "cin_statement", "cout_statement", "expression", "term", YY_NULLPTR
+  "CCONST", "STRING", "REFER", "$accept", "program", "statements",
+  "statement", "assignment", "cin_statement", "cout_statement",
+  "expression", "term", YY_NULLPTR
 };
 
 static const char *
@@ -638,17 +640,17 @@ static const yytype_int8 yycheck[] =
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     4,    23,    29,    30,    31,    32,    33,    34,
-      21,    22,    11,     0,    31,    14,    14,    14,    23,    24,
-      25,    27,    35,    36,    23,    23,    27,    35,     5,     6,
-      36,    36
+       0,     3,     4,    23,    30,    31,    32,    33,    34,    35,
+      21,    22,    11,     0,    32,    14,    14,    14,    23,    24,
+      25,    27,    36,    37,    23,    23,    27,    36,     5,     6,
+      37,    37
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    28,    29,    30,    30,    31,    31,    31,    32,    32,
-      33,    34,    34,    34,    35,    35,    35,    36,    36,    36
+       0,    29,    30,    31,    31,    32,    32,    32,    33,    33,
+      34,    35,    35,    35,    36,    36,    36,    37,    37,    37
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -1119,117 +1121,119 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: statements  */
-#line 58 "parser.y"
-                                        { main_func_tree = (yyvsp[0].node);	ast_traversal((yyvsp[0].node));	}
-#line 1125 "parser.tab.c"
+#line 59 "parser.y"
+                                        { main_func_tree = (yyvsp[0].node); printf("main func tree created");	ast_traversal((yyvsp[0].node));
+	}
+#line 1128 "parser.tab.c"
     break;
 
   case 3: /* statements: statements statement  */
-#line 61 "parser.y"
+#line 65 "parser.y"
                                         { AST_Node_Statements *temp = (AST_Node_Statements*) (yyvsp[-1].node);
-					  (yyval.node) = new_statements_node(temp->statements, temp->statement_count (yyvsp[0].node));
+					  (yyval.node) = new_statements_node(temp->statements, temp->statement_count, (yyvsp[0].node));
 					}
-#line 1133 "parser.tab.c"
+#line 1136 "parser.tab.c"
     break;
 
   case 4: /* statements: statement  */
-#line 64 "parser.y"
+#line 68 "parser.y"
                                         { (yyval.node) = new_statements_node(NULL, 0, (yyvsp[0].node));	}
-#line 1139 "parser.tab.c"
+#line 1142 "parser.tab.c"
     break;
 
   case 5: /* statement: assignment SEMI  */
-#line 67 "parser.y"
+#line 71 "parser.y"
                                         { (yyval.node) = (yyvsp[-1].node);			    		}
-#line 1145 "parser.tab.c"
+#line 1148 "parser.tab.c"
     break;
 
   case 6: /* statement: cin_statement SEMI  */
-#line 68 "parser.y"
+#line 72 "parser.y"
                                         { 						}
-#line 1151 "parser.tab.c"
+#line 1154 "parser.tab.c"
     break;
 
   case 7: /* statement: cout_statement SEMI  */
-#line 69 "parser.y"
+#line 73 "parser.y"
                                         {						}
-#line 1157 "parser.tab.c"
+#line 1160 "parser.tab.c"
     break;
 
   case 8: /* assignment: VARIABLE ASSIGN expression  */
-#line 72 "parser.y"
-                                        { 				}
-#line 1163 "parser.tab.c"
+#line 76 "parser.y"
+                                        { 			}
+#line 1166 "parser.tab.c"
     break;
 
   case 9: /* assignment: VARIABLE ASSIGN STRING  */
-#line 73 "parser.y"
+#line 77 "parser.y"
                                         {						}
-#line 1169 "parser.tab.c"
+#line 1172 "parser.tab.c"
     break;
 
   case 10: /* cin_statement: CCIN RIGHTSHIFT VARIABLE  */
-#line 76 "parser.y"
+#line 80 "parser.y"
                                         {						}
-#line 1175 "parser.tab.c"
+#line 1178 "parser.tab.c"
     break;
 
   case 11: /* cout_statement: CCOUT LEFTSHIFT expression  */
-#line 79 "parser.y"
-                                           {						}
-#line 1181 "parser.tab.c"
+#line 83 "parser.y"
+                                           {	(yyval.node) = new_ast_stream_node(COUT, (yyvsp[0].node), NULL);					}
+#line 1184 "parser.tab.c"
     break;
 
   case 12: /* cout_statement: CCOUT LEFTSHIFT VARIABLE  */
-#line 80 "parser.y"
-                                         {						}
-#line 1187 "parser.tab.c"
+#line 84 "parser.y"
+                                         {	(yyval.node) = new_ast_stream_node(COUT, new_ast_ref_node((yyvsp[0].symtab_item), 0), NULL);		}
+#line 1190 "parser.tab.c"
     break;
 
   case 13: /* cout_statement: CCOUT LEFTSHIFT STRING  */
-#line 81 "parser.y"
-                                         {						}
-#line 1193 "parser.tab.c"
+#line 85 "parser.y"
+                                         { (yyval.node) = new_ast_stream_node(COUT, new_ast_const_node(STRING_TYPE, (Value){.sval = (yyvsp[0].str_val)}), NULL);						}
+#line 1196 "parser.tab.c"
     break;
 
   case 14: /* expression: expression ADDOP term  */
-#line 84 "parser.y"
-                                        { (yyval.node) = new_ast_arithm_node((yyvsp[-1].int_val).ival, (yyvsp[-2].node), (yyvsp[0].node));	}
-#line 1199 "parser.tab.c"
+#line 88 "parser.y"
+                                        { (yyval.node) = new_ast_arithm_node(((yyvsp[-1].int_val) == ADDOP) ? ADD : SUB, (yyvsp[-2].node), (yyvsp[0].node));	}
+#line 1202 "parser.tab.c"
     break;
 
   case 15: /* expression: expression MULTOP term  */
-#line 85 "parser.y"
-                                        { (yyval.node) = new_ast_arithm_node(MUL, (yyvsp[-2].node), (yyvsp[0].node));	}
-#line 1205 "parser.tab.c"
+#line 89 "parser.y"
+                                        { (yyval.node) = new_ast_arithm_node(((yyvsp[-1].int_val) == MULTOP) ? MUL : DIV, (yyvsp[-2].node), (yyvsp[0].node)); // Create arithmetic node for multiplication/division	
+	  }
+#line 1209 "parser.tab.c"
     break;
 
   case 16: /* expression: term  */
-#line 86 "parser.y"
+#line 91 "parser.y"
                                         { (yyval.node) = (yyvsp[0].node);					}
-#line 1211 "parser.tab.c"
+#line 1215 "parser.tab.c"
     break;
 
   case 17: /* term: VARIABLE  */
-#line 89 "parser.y"
-                                        { 			    	}
-#line 1217 "parser.tab.c"
+#line 94 "parser.y"
+                                        { (yyval.node) = new_ast_ref_node((yyvsp[0].symtab_item), 0); 		    	}
+#line 1221 "parser.tab.c"
     break;
 
   case 18: /* term: ICONST  */
-#line 90 "parser.y"
-                                        {   						}
-#line 1223 "parser.tab.c"
+#line 95 "parser.y"
+                                        { (yyval.node) = new_ast_const_node(INT_TYPE, (Value){.ival = (yyvsp[0].int_val)});  }
+#line 1227 "parser.tab.c"
     break;
 
   case 19: /* term: FCONST  */
-#line 91 "parser.y"
-                                        {						}
-#line 1229 "parser.tab.c"
+#line 96 "parser.y"
+                                        { (yyval.node) = new_ast_const_node(FLOAT_TYPE, (Value){.fval = (yyvsp[0].double_val)});						}
+#line 1233 "parser.tab.c"
     break;
 
 
-#line 1233 "parser.tab.c"
+#line 1237 "parser.tab.c"
 
       default: break;
     }
@@ -1422,7 +1426,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 95 "parser.y"
+#line 100 "parser.y"
 
 
 void yyerror(const char *s) {

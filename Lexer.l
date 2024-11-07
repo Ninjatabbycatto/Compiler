@@ -40,15 +40,23 @@ STRING \"{print}*\"
 %%
 "cin"                           { return CCIN;                                    }
 "cout"                          { return CCOUT;                                   }
+
+
+
 "<<"                            { return LEFTSHIFT; } // Token for output stream operator
 ">>"                            { return RIGHTSHIFT; } // Token for input stream operator
+"+"					    { yylval.val.ival = ADD; return ADDOP; }
+"-"					    { yylval.val.ival = SUB; return ADDOP; }
+"*"						{ return MULTOP; }
+"/"						{ return DIVOP; }
+"--"				    { yylval.val.ival = DEC; return INCR; }
+"=="				    { yylval.val.ival = EQUAL; return EQUOP; }
+"!="				    { yylval.val.ival = NOT_EQUAL; return EQUOP; }
+">"						{ yylval.val.ival = GREATER; return RELOP; }
+"<"						{ yylval.val.ival = LESS; return RELOP; }
+">="					{ yylval.val.ival = GREATER_EQUAL; return RELOP; }
+"<="					{ yylval.val.ival = LESS_EQUAL; return RELOP; }
 
-"+"|"-"                         { return ADDOP;                                   }
-"*"                             { return MULTOP;                                  }
-"/"                             { return DIVOP;                                   }
-"++"|"--"                       { return INCR;                                    }
-"=="|"!="                       { return EQUOP;                                   }
-">"|"<"|">="|"<="               { return RELOP;                                   }
 
 "("			        { return LPAREN; }
 ")" 			        { return RPAREN; }

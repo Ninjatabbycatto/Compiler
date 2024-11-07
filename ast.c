@@ -38,7 +38,7 @@ AST_Node *new_statements_node(AST_Node **statements, int statement_count, AST_No
 	
 	// set node type
 	v->type = STATEMENTS;
-	
+		
 	// first statement
 	if(statements == NULL){
 		statements = (AST_Node**) malloc (sizeof (AST_Node*));
@@ -55,7 +55,7 @@ AST_Node *new_statements_node(AST_Node **statements, int statement_count, AST_No
 	// set entries
 	v->statements = statements;
 	v->statement_count = statement_count;
-	
+	printf("new statement node created");
 	// return type-casted result
 	return (struct AST_Node *) v;
 }
@@ -106,6 +106,8 @@ AST_Node *new_ast_arithm_node (enum Arithm_op op, AST_Node *left, AST_Node * rig
 	v->op = op;
 	v->left = left;
 	v->right = right;
+	
+
 
 	return(struct AST_Node *) v;
 
@@ -190,6 +192,7 @@ void ast_print_node(AST_Node *node) {
 
 
 	switch(node->type) {
+		
 		case BASIC_NODE:
 			printf("Basic Node");
 			break;
@@ -235,15 +238,18 @@ void ast_print_node(AST_Node *node) {
 			temp_char = (struct AST_Node_Char *) node;
 			printf("character operation of operator %d\n", temp_char->op);
 			break;
+
+
 		defeault:
 			fprintf(stderr, "Error in node selection!\n");
 			exit(1);
+
 	}
 }
 
 
 void ast_traversal(AST_Node *node){
-
+	printf("traversing node");
 	int i;
 	if (node == NULL) return;
 

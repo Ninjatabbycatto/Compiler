@@ -21,6 +21,7 @@ void yyerror(const char *s);
 %}
 
 %union {
+	Value val;
 	char char_val;
 	int int_val;
 	double double_val;
@@ -38,7 +39,7 @@ void yyerror(const char *s);
 %token <double_val> FCONST
 %token <char_val> CCONST
 %token <str_val> STRING
-
+%token <val> REFER
 
 %left LBRACK RBRACK LPAREN RPAREN
 %left MULTOP DIVOP
@@ -55,11 +56,14 @@ void yyerror(const char *s);
 
 %%
 program: 
-       statements			{ main_func_tree = $1;	ast_traversal($1);	}
+       statements			{ main_func_tree = $1; printf("main func tree created");	ast_traversal($1);
+	}
 ;
 
+
+
 statements: statements statement	{ AST_Node_Statements *temp = (AST_Node_Statements*) $1;
-					  $$ = new_statements_node(temp->statements, temp->statement_count $2);
+					  $$ = new_statements_node(temp->statements, temp->statement_count, $2);
 					}
 	  | statement			{ $$ = new_statements_node(NULL, 0, $1);	}
 ;
@@ -69,26 +73,27 @@ statement: assignment SEMI		{ $$ = $1;			    		}
 	 | cout_statement SEMI		{						}
 ;
 
-assignment: VARIABLE ASSIGN expression  { 				}
+assignment: VARIABLE ASSIGN expression  { 			}
 	  | VARIABLE ASSIGN STRING	{						}
 ;
 
 cin_statement: CCIN RIGHTSHIFT VARIABLE {						}
 ;
 
-cout_statement: CCOUT LEFTSHIFT expression {						}
-	      | CCOUT LEFTSHIFT VARIABLE {						}
-	      | CCOUT LEFTSHIFT STRING	 {						}
+cout_statement: CCOUT LEFTSHIFT expression {	$$ = new_ast_stream_node(COUT, $3, NULL);					}
+	      | CCOUT LEFTSHIFT VARIABLE {	$$ = new_ast_stream_node(COUT, new_ast_ref_node($3, 0), NULL);		}
+	      | CCOUT LEFTSHIFT STRING	 { $$ = new_ast_stream_node(COUT, new_ast_const_node(STRING_TYPE, (Value){.sval = $3}), NULL);						}
 ;
 
-expression: expression ADDOP term	{ $$ = new_ast_arithm_node($2.ival, $1, $3);	}
-	  | expression MULTOP term	{ $$ = new_ast_arithm_node(MUL, $1, $3);	}
+expression: expression ADDOP term	{ $$ = new_ast_arithm_node(($2 == ADDOP) ? ADD : SUB, $1, $3);	}
+	  | expression MULTOP term	{ $$ = new_ast_arithm_node(($2 == MULTOP) ? MUL : DIV, $1, $3); // Create arithmetic node for multiplication/division	
+	  }
 	  | term			{ $$ = $1;					}
 ;
 
-term: VARIABLE				{ 			    	}
-    | ICONST				{   						}
-    | FCONST				{						}
+term: VARIABLE				{ $$ = new_ast_ref_node($1, 0); 		    	}
+    | ICONST				{ $$ = new_ast_const_node(INT_TYPE, (Value){.ival = $1});  }						
+    | FCONST				{ $$ = new_ast_const_node(FLOAT_TYPE, (Value){.fval = $1});						}
 ;
 
 

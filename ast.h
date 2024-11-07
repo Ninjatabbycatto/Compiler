@@ -125,6 +125,7 @@ typedef struct AST_Node_Arithm{
 	struct AST_Node *left;
 	struct AST_Node *right;
 	int data_type;
+	int g_index;
 }AST_Node_Arithm;
 
 typedef struct AST_Node_Bool{
@@ -170,7 +171,7 @@ typedef struct AST_Node_Equ {
 
 
 static AST_Node* main_func_tree;
-
+static AST_Node* main_decl_tree;
 
 
 // AST node management...--------------------------------------------------

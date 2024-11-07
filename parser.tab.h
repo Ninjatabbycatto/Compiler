@@ -78,7 +78,8 @@ extern int yydebug;
     ICONST = 279,                  /* ICONST  */
     FCONST = 280,                  /* FCONST  */
     CCONST = 281,                  /* CCONST  */
-    STRING = 282                   /* STRING  */
+    STRING = 282,                  /* STRING  */
+    REFER = 283                    /* REFER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -89,6 +90,7 @@ union YYSTYPE
 {
 #line 23 "parser.y"
 
+	Value val;
 	char char_val;
 	int int_val;
 	double double_val;
@@ -97,7 +99,7 @@ union YYSTYPE
 	AST_Node* node;
 
 
-#line 101 "parser.tab.h"
+#line 103 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
