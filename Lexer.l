@@ -45,7 +45,7 @@ STRING \"{print}*\"
 
 "<<"                            { return LEFTSHIFT; } // Token for output stream operator
 ">>"                            { return RIGHTSHIFT; } // Token for input stream operator
-"+"					    { return ADDOP; }
+"+"					    {  yylval.str_val = strdup(yytext);return ADDOP; }
 
 
 "("			        { return LPAREN; }
@@ -57,10 +57,10 @@ STRING \"{print}*\"
 ";"			        { return SEMI; }
 "."			        { return DOT; }
 ","			        { return COMMA; }
-"="			        { return ASSIGN; }
+"="			        {  yylval.str_val = strdup(yytext);return ASSIGN; }
 
 
-{ID}                            { return VARIABLE;                               }
+{ID}                            { yylval.str_val = strdup(yytext); return VARIABLE;                               }
 
 {ICONST} 	        	{ yylval.int_val   = atoi(yytext); return ICONST; }
 {CCONST} 		        { yylval.char_val  = yytext[0];    return CCONST; }
